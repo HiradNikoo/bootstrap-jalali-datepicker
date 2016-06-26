@@ -6,6 +6,7 @@
  * Edited By Rahman Mousavian
  * Special Thanks to 
  * Mahdi Hasheminezhad. email: hasheminezhad at gmail dot com (http://hasheminezhad.com)
+ * Edited by: Hirad Nikoo
  */
  
 (function( $, undefined ) {
