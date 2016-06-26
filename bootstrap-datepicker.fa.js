@@ -232,7 +232,22 @@ jQuery(function($){
 		dayNamesShort: ['یک', 'دو', 'سه', 'چهار', 'پنج', 'جمعه', 'شنبه'],
 		dayNamesMin: ['ی','د','س','چ','پ','ج','ش'],
 		weekHeader: 'ه',
-		dateFormat: 'dd/mm/yy',
+		dateFormat: 'yy/mm/dd',
+        	formatBeforeGet: function (val) { 
+        	    if (!val) return "";
+	            var digits = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
+	            return val.replace(/0|1|2|3|4|5|6|7|8|9/g, function (matched) {
+	                var index = parseInt(matched, 10);
+	                return digits[index];
+	            });
+        	},
+        	formatBeforeSet: function (val) { 
+        	    if (!val) return "";
+	            var digits = { "٠": 0, "١": 1, "٢": 2, "٣": 3, "٤": 4, "٥": 5, "٦": 6, "٧": 7, "٨": 8, "٩": 9 };
+	            return val.replace(/٠|١|٢|٣|٤|٥|٦|٧|٨|٩/g, function (matched) {
+	                return digits[matched];
+	            });
+        	},
 		firstDay: 6,
 		isRTL: true,
 		showMonthAfterYear: false,
