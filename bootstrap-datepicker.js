@@ -392,7 +392,9 @@
             firstDay: 0, // The first day of the week, Sun = 0, Mon = 1, ...
             isRTL: false, // True if right-to-left language, false if left-to-right
             showMonthAfterYear: false, // True if the year select precedes month, false for month then year
-            yearSuffix: '' // Additional text to append to the year in the month headers
+            yearSuffix: '', // Additional text to append to the year in the month headers
+            formatBeforeSet: function (val) { return val; },
+            formatBeforeGet: function (val) { return val; }
         };
         this._defaults = { // Global defaults for all the date picker instances
             showOn: 'focus', // 'focus' for popup on focus,
@@ -986,10 +988,10 @@
         /* Synchronise manual entry and field/alternate field. */
         _doKeyUp: function(event) {
             var inst = $.datepicker._getInst(event.target);
-            if (inst.input.val() != inst.lastVal) {
+            if (this._defaults.formatBeforeSet(inst.input.val()) != inst.lastVal) {
                 try {
                     var date = $.datepicker.parseDate($.datepicker._get(inst, 'dateFormat'),
-                        (inst.input ? inst.input.val() : null),
+                        (inst.input ? this._defaults.formatBeforeSet(inst.input.val()) : null),
                         $.datepicker._getFormatConfig(inst));
                     if (date) { // only if valid
                         $.datepicker._setDateFromField(inst);
@@ -1216,7 +1218,7 @@
                 var onClose = this._get(inst, 'onClose');
                 if (onClose)
                     onClose.apply((inst.input ? inst.input[0] : null),
-                        [(inst.input ? inst.input.val() : ''), inst]);
+                        [(inst.input ? this._defaults.formatBeforeSet(inst.input.val()) : ''), inst]);
                 this._lastInput = null;
                 if (this._inDialog) {
                     this._dialogInput.css({
@@ -1305,7 +1307,7 @@
                 return;
             }
             var inst = this._getInst(target[0]);
-            inst.selectedDay = inst.currentDay = $('a', td).html();
+            inst.selectedDay = inst.currentDay = this._defaults.formatBeforeSet($('a', td).html());
             inst.selectedMonth = inst.currentMonth = month;
             inst.selectedYear = inst.currentYear = year;
             this._selectDate(id, this._formatDate(inst,
@@ -1696,11 +1698,11 @@
 
         /* Parse existing date and initialise date picker. */
         _setDateFromField: function(inst, noDefault) {
-            if (inst.input.val() == inst.lastVal) {
+            if (this._defaults.formatBeforeSet(inst.input.val()) == inst.lastVal) {
                 return;
             }
             var dateFormat = this._get(inst, 'dateFormat');
-            var dates = inst.lastVal = inst.input ? inst.input.val() : null;
+            var dates = inst.lastVal = inst.input ? this._defaults.formatBeforeSet(inst.input.val()) : null;
             var date, defaultDate;
             date = defaultDate = this._getDefaultDate(inst);
             var settings = this._getFormatConfig(inst);
@@ -1815,7 +1817,7 @@
         /* Retrieve the date(s) directly. */
         _getDate: function(inst) {
             this.CDate = this._get(inst, 'calendar');//[CC]
-            var startDate = (!inst.currentYear || (inst.input && inst.input.val() == '') ? null :
+            var startDate = (!inst.currentYear || (inst.input && this._defaults.formatBeforeSet(inst.input.val()) == '') ? null :
                 this._daylightSavingAdjust(new this.CDate(//[CC]
                     inst.currentYear, inst.currentMonth, inst.currentDay)));
             return startDate;
@@ -2007,11 +2009,11 @@
                             ((!otherMonth || showOtherMonths) && daySettings[2] ? ' title="' + daySettings[2] + '"' : '') + // cell title
                             (unselectable ? '' : ' data-handler="selectDay" data-event="click" data-month="' + printDate.getMonth() + '" data-year="' + printDate.getFullYear() + '"') + '>' + // actions
                             (otherMonth && !showOtherMonths ? '&#xa0;' : // display for other months
-                                (unselectable ? '<span class="ui-state-default">' + printDate.getDate() + '</span>' : '<a class="ui-state-default' +
+                                (unselectable ? '<span class="ui-state-default">' + this._defaults.formatBeforeGet(printDate.getDate()) + '</span>' : '<a class="ui-state-default' +
                                     (printDate.getTime() == today.getTime() ? ' ui-state-highlight' : '') +
                                     (printDate.getTime() == currentDate.getTime() ? ' ui-state-active' : '') + // highlight selected day
                                     (otherMonth ? ' ui-priority-secondary' : '') + // distinguish dates from other months
-                                    '" href="#">' + printDate.getDate() + '</a>')) + '</td>'; // display selectable date
+                                    '" href="#">' + this._defaults.formatBeforeGet(printDate.getDate()) + '</a>')) + '</td>'; // display selectable date
                             printDate.setDate(printDate.getDate() + 1);
                             printDate = this._daylightSavingAdjust(printDate);
                         }
@@ -2064,7 +2066,7 @@
             if ( !inst.yearshtml ) {
                 inst.yearshtml = '';
                 if (secondary || !changeYear)
-                    html += '<span class="ui-datepicker-year">' + drawYear + '</span>';
+                    html += '<span class="ui-datepicker-year">' + this._defaults.formatBeforeGet(drawYear) + '</span>';
                 else {
                     // determine range of years to display
                     var years = this._get(inst, 'yearRange').split(':');
@@ -2194,7 +2196,7 @@
             var date = (day ? (typeof day == 'object' ? day :
                 this._daylightSavingAdjust(new this.CDate(year, month, day))) ://[CC]
                 this._daylightSavingAdjust(new this.CDate(inst.currentYear, inst.currentMonth, inst.currentDay)));//[CC]
-            return this.formatDate(this._get(inst, 'dateFormat'), date, this._getFormatConfig(inst));
+            return this._defaults.formatBeforeGet(this.formatDate(this._get(inst, 'dateFormat'), date, this._getFormatConfig(inst)));
         },
 
         /* [CC]Compare two dates */
