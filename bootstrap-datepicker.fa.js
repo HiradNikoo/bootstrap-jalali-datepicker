@@ -3,6 +3,7 @@
  * Rahman Mousavian	<mousavian.rahman@gmail.com>
  *  Using jQuery Datepicker (Jalali Calendar) By:
  * 	Mahdi Hasheminezhad. email: hasheminezhad at gmail dot com (http://hasheminezhad.com)
+ * Edited By: Hirad Nikoo
  */
 ;
 
